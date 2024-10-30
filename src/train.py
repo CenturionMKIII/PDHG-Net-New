@@ -62,7 +62,7 @@ for epoch in range(max_epoch):
     avg_loss_x /= round(len(flist_train),2)
     avg_loss_y /= round(len(flist_train),2)
     print(f'Epoch {epoch} Train:::: primal loss:{avg_loss_x}    dual loss:{avg_loss_y}')
-    st = f'epoch{epoch}train: {avg_loss_x} {avg_loss_y}'
+    st = f'epoch{epoch}train: {avg_loss_x} {avg_loss_y}\n'
     flog.write(st)
 
 
@@ -101,7 +101,7 @@ for epoch in range(max_epoch):
     avg_loss_x /= round(len(flist_train),2)
     avg_loss_y /= round(len(flist_train),2)
     print(f'Epoch {epoch} Valid:::: primal loss:{avg_loss_x}    dual loss:{avg_loss_y}')
-    st = f'epoch{epoch}train: {avg_loss_x} {avg_loss_y}'
+    st = f'epoch{epoch}train: {avg_loss_x} {avg_loss_y}\n'
     flog.write(st)
 
     if best_loss > avg_loss_x+avg_loss_y:
