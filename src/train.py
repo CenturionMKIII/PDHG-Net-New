@@ -5,12 +5,12 @@ import pickle
 import os
 import random
 
-flist_train = os.listdir('./data/train')
-flist_valid = os.listdir('./data/valid')
+flist_train = os.listdir('../data/train')
+flist_valid = os.listdir('../data/valid')
 
 
-x_size = 4
-y_size = 2
+x_size = 48
+y_size = 64
 feat_sizes=[64,64,64]
 
 mdl = pdhg_net(x_size,y_size,feat_sizes)
@@ -19,7 +19,7 @@ optimizer = torch.optim.Adam(mdl.parameters(), lr=1e-4)
 
 max_epoch = 10000
 
-flog = open('./logs/train_log.log','w')
+flog = open('../logs/train_log.log','w')
 
 best_loss = 1e+20
 
@@ -29,10 +29,18 @@ for epoch in range(max_epoch):
     random.shuffle(flist_train)
     for fnm in flist_train:
         # train
-        f = gzip.open(f'./data/train/{fnm}','rb')
-        A,b,c,x,y,sol,dual,obj = pickle.load(f)
-        A = torch.as_tensor(A,dtype=torch.float32)
-        AT = A.T
+        f = gzip.open(f'../data/train/{fnm}','rb')
+        pkl =  pickle.load(f)
+        A_idx = pkl['edge_index']
+        A_val = pkl['edge_weight']
+        b = pkl['b']
+        c = pkl['c']
+        x = pkl['var_feat']
+        y = pkl['con_feat']
+        sol = pkl['label']
+        dual = pkl['dual']
+        AT = torch.sparse_coo_tensor(A_idx,A_val)
+        A = AT.T
         x = torch.as_tensor(x,dtype=torch.float32)
         y = torch.as_tensor(y,dtype=torch.float32)
         b = torch.as_tensor(b,dtype=torch.float32)
@@ -64,10 +72,18 @@ for epoch in range(max_epoch):
     for fnm in flist_valid:
         # valid
         #  reading
-        f = gzip.open(f'./data/valid/{fnm}','rb')
-        A,b,c,x,y,sol,dual,obj = pickle.load(f)
-        A = torch.as_tensor(A,dtype=torch.float32)
-        AT = A.T
+        f = gzip.open(f'../data/valid/{fnm}','rb')
+        pkl =  pickle.load(f)
+        A_idx = pkl['edge_index']
+        A_val = pkl['edge_weight']
+        b = pkl['b']
+        c = pkl['c']
+        x = pkl['var_feat']
+        y = pkl['con_feat']
+        sol = pkl['label']
+        dual = pkl['dual']
+        AT = torch.sparse_coo_tensor(A_idx,A_val)
+        A = AT.T
         x = torch.as_tensor(x,dtype=torch.float32)
         y = torch.as_tensor(y,dtype=torch.float32)
         b = torch.as_tensor(b,dtype=torch.float32)
@@ -90,7 +106,7 @@ for epoch in range(max_epoch):
 
     if best_loss > avg_loss_x+avg_loss_y:
         best_loss = avg_loss_x+avg_loss_y
-        torch.save(mdl.state_dict(), f'./model/best_model.mdl')
+        torch.save(mdl.state_dict(), f'../model/best_model.mdl')
         print(f'Saving new best model with valid loss: {best_loss}')
 
     flog.flush()
