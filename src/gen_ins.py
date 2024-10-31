@@ -259,11 +259,11 @@ def gen_files(n_files, num_nodes, degree, damping_factor):
         train_data(i, num_nodes, degree, damping_factor, train=False)
 
 
-num_nodes = 10
+num_nodes = 10000
 degree = 3
 damping_factor = 0.85
 t1 = time.time()
-n_files = [2,1]
+n_files = [90,10]
 gen_files(n_files, num_nodes, degree, damping_factor)
 t2 = time.time()
 print('Instance generation finished in',t2-t1,'s')
